@@ -42,7 +42,7 @@ def parse_date(v):
         s = s.split('~')[0].strip()
     if re.fullmatch(r'\d{5}(\.\d+)?', s):
         try:
-            return EXCEL_EPOCH + timedelta(days=float(s))
+            return EXCEL_EPOCH + timedelta(days=int(float(s)))
         except Exception:
             return None
     s2 = s.replace('-', '/')
