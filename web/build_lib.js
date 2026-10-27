@@ -31,7 +31,7 @@
     // 原表里混有区间写法 '2026-08-18 ~ 2026-10-17'，取起点（上线日期）
     if (s.indexOf('~') !== -1) s = s.split('~')[0].trim();
     if (/^\d{5}(\.\d+)?$/.test(s)) {
-      return new Date(EXCEL_EPOCH_UTC + parseFloat(s) * 86400000);
+      return new Date(EXCEL_EPOCH_UTC + Math.floor(parseFloat(s)) * 86400000);
     }
     var s2 = s.replace(/-/g, '/');
     var m = s2.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/);
