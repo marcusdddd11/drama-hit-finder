@@ -11,7 +11,7 @@
     'rank_m', 'p_m', 'platform', 'pub_date'];
 
   // '🌟仿真人&AI剧' 已于 2026-10-27 经火星确认移除（底稿 0 部），与 build_library.py 保持一致
-  var FORMAT_TAGS = { 'AI仿真人': 1, '实拍': 1, '3D漫': 1, '2D漫': 1, '动漫': 1, '动态解说漫': 1, '🎧 动态解说漫': 1 };
+  var FORMAT_TAGS = { 'AI仿真人': 1, '实拍': 1, '3D漫': 1, '2D漫': 1, '动态解说漫': 1};
   var AUDIENCE_TAGS = { '女频': 1, '男频': 1, 'BL': 1, 'LGBTQ+': 1, '双男主': 1, '双女主': 1, '大女主': 1 };
   var NOISE_TAGS = { '其他': 1 };
 
