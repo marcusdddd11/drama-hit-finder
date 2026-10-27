@@ -1,0 +1,72 @@
+name: 刷新短剧剧目库
+
+on:
+  schedule:
+    - cron: '17 0,12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: 从飞书拉取「数据底稿」（全量 7079 行）
+        env:
+          LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+          LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+        run: python3 scripts/fetch_lark.py
+
+      - name: 清洗 + 打分 + 生成网页数据
+        run: python3 scripts/build_library.py
+
+      - name: 发布前体检
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/check_release.py --yes
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ]; then
+            echo "::warning::没有体检基线（data/release_baseline.json 未提交），本次跳过对比"
+            exit 0
+          fi
+          exit "$code"
+
+      - name: 打包单文件网页
+        run: bash scripts/bundle_standalone.sh
+
+      - name: 组装 Pages 产物
+        run: |
+          mkdir -p _site
+          cp dist/DramaHitFinder.html _site/index.html
+          cp data/drama_library.csv _site/剧目库.csv
+          ls -lh _site
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
